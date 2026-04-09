@@ -15,7 +15,6 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body;
-
     if (!body || typeof body !== "object") {
       return res.status(400).json({ erro: "Corpo da requisição inválido" });
     }
@@ -49,23 +48,17 @@ export default async function handler(req, res) {
       savedAt: body.savedAt || new Date().toISOString(),
     };
 
-    // Upstash: lê lista existente e adiciona o novo registro
-    let registros = [];
-    try {
-      const existing = await kv.get("quadros_eletricos");
-      registros = Array.isArray(existing) ? existing : [];
-    } catch {
-      registros = [];
-    }
-
-    registros.push(registro);
-    await kv.set("quadros_eletricos", registros);
+    // RPUSH: acrescenta o registro ao final da lista — nunca sobrescreve
+    const totalRegistros = await kv.rpush(
+      "quadros_eletricos",
+      JSON.stringify(registro)
+    );
 
     return res.status(200).json({
       sucesso: true,
       id: registro.id,
       mensagem: `Quadro "${registro.nomeQuadro}" enviado com sucesso!`,
-      totalRegistros: registros.length,
+      totalRegistros,
     });
   } catch (err) {
     console.error("Erro ao salvar:", err);
