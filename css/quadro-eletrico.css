@@ -346,10 +346,21 @@ body {
   }
   .import-export-btns button { padding: 6px 10px; font-size: 11px; }
   .print-btn {
-    position: absolute;
-    right: 16px;
-    top: 12px;
-    top: max(12px, var(--safe-area-top));
+    /* Mantém no fluxo flex — sem position absolute/fixed */
+    position: static;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  /* Garante que o div de título cede espaço ao botão */
+  .page-header > div:not(.import-export-btns) {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .page-header h1 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .new-form-btn { display: none; }
 
@@ -359,8 +370,10 @@ body {
 
   /* Mobile tables */
   .circuit-panel {
-    margin: 0 -16px;
-    padding: 0 8px;
+    /* circuit-panel é filho direto de body — sem padding de section para compensar.
+       Negative margin estava extravasando 16px para cada lado. Removido. */
+    margin: 0;
+    padding: 0;
   }
   .circuit-table {
     min-width: 500px;
@@ -773,10 +786,8 @@ body {
 
   /* Buttons with icons */
   .print-btn {
-    position: fixed;
-    top: max(12px, var(--safe-area-top));
-    right: 16px;
-    z-index: 200;
+    /* Removido position: fixed — mantém no fluxo do header */
+    position: static;
     min-height: 44px;
     border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -837,13 +848,11 @@ body {
     padding-right: max(20px, env(safe-area-inset-right));
   }
 
-  .print-btn {
-    top: max(12px, env(safe-area-inset-top));
-  }
-
+  /* Usa 16px como base para manter consistência com margin: 0 -16px
+     das tabelas de inspeção e circuitos dentro das sections */
   .section {
-    padding-left: max(20px, env(safe-area-inset-left));
-    padding-right: max(20px, env(safe-area-inset-right));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
   }
 
   .summary-panel {
