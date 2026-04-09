@@ -486,6 +486,434 @@ body {
   }
 }
 
+/* ─── IPHONE-SPECIFIC ENHANCEMENTS ───────────────────────────────── */
+@media only screen and (max-width: 430px) {
+  /* Prevent pull-to-refresh interference */
+  html {
+    overscroll-behavior-y: contain;
+  }
+
+  body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Allow selection on inputs */
+  input, select, textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Better touch targets (44px minimum for iOS) */
+  .print-btn, .import-export-btns button, .new-form-btn {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .device-chip {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  .add-row-btn, .remove-row-btn {
+    min-height: 44px;
+  }
+
+  /* Improve checkbox/radio tap targets */
+  .circuit-table input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+  }
+
+  .inspection-table .radio-cell input[type="radio"] {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Better form input styling */
+  .field-group input,
+  .field-group select,
+  .field-group textarea,
+  .obs-input {
+    font-size: 16px !important; /* Prevents iOS zoom */
+    padding: 12px 14px;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+  }
+
+  /* Improve select appearance on iOS */
+  .field-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+
+  /* Status select in tables */
+  .status-select {
+    font-size: 16px !important;
+    padding: 6px 10px;
+  }
+
+  /* Photos grid improvement */
+  .photos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .photo-card {
+    aspect-ratio: 4/3;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+  }
+
+  .photo-card .photo-actions button {
+    min-height: 32px;
+    min-width: 44px;
+    font-size: 12px;
+  }
+
+  /* Summary panel improvements */
+  .summary-panel {
+    margin: 12px 16px;
+    padding: 14px;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .summary-item {
+    padding: 12px;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+  }
+
+  .summary-item .value {
+    font-size: 18px;
+  }
+
+  .summary-item .value input {
+    font-size: 18px;
+    width: 70px;
+  }
+
+  /* Circuit tables - horizontal scroll with smooth momentum */
+  .circuit-panel {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-scroll-snap-type: x mandatory;
+    scroll-snap-type: x mandatory;
+  }
+
+  .circuit-table {
+    min-width: 600px;
+    scroll-snap-align: start;
+  }
+
+  .circuit-table input[type="text"],
+  .circuit-table input[type="number"],
+  .circuit-table select {
+    font-size: 16px !important;
+    padding: 8px 6px;
+    min-height: 40px;
+  }
+
+  /* Device chips grid - better fit */
+  .devices-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .device-chip {
+    min-height: 60px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+  }
+
+  .device-chip span {
+    font-size: 13px;
+  }
+
+  .device-chip .device-qty {
+    font-size: 11px;
+  }
+
+  .device-qty-input {
+    width: 50px !important;
+    font-size: 16px !important;
+    min-height: 32px;
+    text-align: center;
+  }
+
+  /* Section styling */
+  .section {
+    padding: 14px 16px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+
+  /* Inspection table */
+  .inspection-table {
+    font-size: 14px;
+  }
+
+  .inspection-table th {
+    font-size: 10px;
+    padding: 10px 6px;
+  }
+
+  .inspection-table .question-cell {
+    font-size: 13px;
+    min-width: 160px;
+  }
+
+  /* Header improvements */
+  .page-header {
+    padding: max(12px, env(safe-area-inset-top)) 16px;
+    padding-top: max(12px, var(--safe-area-top));
+  }
+
+  .page-header h1 {
+    font-size: 15px;
+  }
+
+  .page-header .logo {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  /* Import/Export buttons */
+  .import-export-btns {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .import-export-btns button {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  /* Row actions */
+  .row-actions {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 16px;
+    margin: 12px 0;
+  }
+
+  .row-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .add-row-btn, .remove-row-btn {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+  }
+
+  /* Custom other input */
+  .custom-other-input {
+    font-size: 16px !important;
+    padding: 8px 10px;
+  }
+
+  /* Panel label */
+  .panel-label {
+    padding: 10px 16px;
+    font-size: 11px;
+    gap: 8px;
+  }
+
+  .panel-label .side-badge {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  /* Fields grid */
+  .fields-grid {
+    gap: 12px;
+  }
+
+  /* Photos actions */
+  .photos-actions {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .photos-actions .add-row-btn {
+    min-width: 140px;
+    flex: 1;
+  }
+
+  /* Save status */
+  .save-status {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  /* Buttons with icons */
+  .print-btn {
+    position: fixed;
+    top: max(12px, var(--safe-area-top));
+    right: 16px;
+    z-index: 200;
+    min-height: 44px;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+  }
+}
+
+/* iPhone Pro Max / Large phones */
+@media only screen and (min-width: 414px) and (max-width: 480px) {
+  .devices-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .photos-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Landscape iPhone */
+@media only screen and (max-width: 926px) and (orientation: landscape) {
+  body {
+    min-height: 100vh;
+  }
+
+  .page-header {
+    flex-wrap: nowrap;
+    padding: max(8px, var(--safe-area-top)) max(16px, var(--safe-area-right));
+  }
+
+  .import-export-btns {
+    order: 0;
+    width: auto;
+    margin-left: auto;
+  }
+
+  .print-btn {
+    position: static;
+  }
+
+  .fields-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .fields-grid .full {
+    grid-column: 1 / -1;
+  }
+
+  .circuit-panel {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+}
+
+/* Dynamic Island / Notch safe area for iPhone 14 Pro and newer */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .page-header {
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+
+  .print-btn {
+    top: max(12px, env(safe-area-inset-top));
+  }
+
+  .section {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+
+  .summary-panel {
+    margin-left: max(16px, env(safe-area-inset-left));
+    margin-right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+/* Fix for iOS bounce scroll */
+@supports (-webkit-touch-callout: none) {
+  body {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+}
+
+/* Active/pressed states for better touch feedback */
+@media (hover: none) and (pointer: coarse) {
+  .device-chip:active {
+    background: var(--amber-light);
+    transform: scale(0.97);
+  }
+
+  .print-btn:active,
+  .import-export-btns button:active,
+  .add-row-btn:active,
+  .new-form-btn:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+
+  .photo-card:active:not(.has-image) {
+    background: var(--amber-light);
+    border-color: var(--amber);
+  }
+}
+
+/* Fix for iOS input zoom on focus */
+@supports (-webkit-touch-callout: none) {
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="datetime-local"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Ensure 16px doesn't break desktop experience */
+  @media (min-width: 1024px) {
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="datetime-local"],
+    select,
+    textarea {
+      font-size: 14px !important;
+    }
+  }
+}
+
 /* Larger phones / phablets */
 @media (min-width: 481px) and (max-width: 768px) {
   .page-header {
@@ -562,6 +990,64 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
   .device-chip { transition: none; }
+}
+
+/* KEYFRAME ANIMATIONS */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Photo Modal Styles */
+#photo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  padding-top: max(60px, env(safe-area-inset-top));
+  padding-bottom: max(40px, env(safe-area-inset-bottom));
+}
+
+#photo-modal img {
+  max-width: 95%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* Toast notifications */
+[style*="position: fixed"][style*="bottom:"] {
+  animation: slideUp 0.3s ease-out !important;
+}
+
+/* Loading toast */
+#import-loading {
+  animation: fadeInUp 0.2s ease-out;
 }
 
 /* ADD ROW BUTTON */
