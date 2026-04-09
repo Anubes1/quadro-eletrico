@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Instruções de Uso - Quadro Elétrico</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    background: #f5f5f5;
+    color: #111827;
+    line-height: 1.6;
+    padding: 20px;
+    padding-top: max(20px, env(safe-area-inset-top));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+  .container { max-width: 600px; margin: 0 auto; }
+  h1 {
+    color: #D97706;
+    font-size: 24px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2 {
+    color: #374151;
+    font-size: 18px;
+    margin: 24px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #E5E7EB;
+  }
+  h3 {
+    color: #4B5563;
+    font-size: 16px;
+    margin: 16px 0 8px 0;
+  }
+  .logo {
+    width: 40px;
+    height: 40px;
+    background: #D97706;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .step {
+    display: flex;
+    gap: 12px;
+    margin: 12px 0;
+    align-items: flex-start;
+  }
+  .step-num {
+    background: #D97706;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .step-content { flex: 1; }
+  .highlight {
+    background: #FEF3C7;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .tip {
+    background: #DBEAFE;
+    border-left: 4px solid #3B82F6;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .warning {
+    background: #FEF3C7;
+    border-left: 4px solid #D97706;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .success {
+    background: #D1FAE5;
+    border-left: 4px solid #059669;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  ul { margin: 8px 0 8px 20px; }
+  li { margin: 6px 0; }
+  .btn {
+    display: inline-block;
+    background: #D97706;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 16px;
+  }
+  .btn:hover { background: #B45309; }
+  .screenshot {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    margin: 12px 0;
+    font-size: 13px;
+    color: #6b7280;
+  }
+  .screenshot img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .platform-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .platform-tab {
+    padding: 8px 16px;
+    border: none;
+    background: #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .platform-tab.active {
+    background: #D97706;
+    color: white;
+  }
+  .platform-content { display: none; }
+  .platform-content.active { display: block; }
+  @media print {
+    body { background: white; padding: 10mm; }
+    .btn { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1><div class="logo">⚡</div> Instruções de Uso</h1>
+  <p style="color: #6b7280; margin-bottom: 20px;">Aplicativo de Ficha de Campo - Quadro Elétrico</p>
+
+  <a href="quadro_eletrico.html" class="btn">📱 Abrir Aplicativo</a>
+
+  <h2>📲 Instalação no Celular (Recomendado)</h2>
+
+  <div class="platform-tabs">
+    <button class="platform-tab active" onclick="showPlatform('ios')">iPhone (iOS)</button>
+    <button class="platform-tab" onclick="showPlatform('android')">Android</button>
+  </div>
+
+  <div id="ios" class="platform-content active">
+    <div class="card">
+      <h3>Como instalar no iPhone (Safari)</h3>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Abra o Safari</strong> e acesse o link do aplicativo
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Toque no botão "Compartilhar"</strong> <span style="font-size: 20px;">⬆️</span> (quadrado com seta para cima) na barra inferior
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Role para baixo</strong> e toque em <span class="highlight">"Adicionar à Tela de Início"</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Toque em "Adicionar"</strong> no canto superior direito
+        </div>
+      </div>
+      <div class="success">
+        ✅ O aplicativo aparecerá na sua tela inicial com o ícone ⚡ e funcionará como um app nativo, sem a barra de endereço do Safari!
+      </div>
+    </div>
+  </div>
+
+  <div id="android" class="platform-content">
+    <div class="card">
+      <h3>Como instalar no Android (Chrome)</h3>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Abra o Chrome</strong> e acesse o link do aplicativo
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Toque no menu</strong> <span style="font-size: 20px;">⋮</span> (três pontos) no canto superior direito
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Toque em</strong> <span class="highlight">"Adicionar à tela inicial"</span> ou <span class="highlight">"Instalar app"</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Confirme</strong> tocando em "Instalar" ou "Adicionar"
+        </div>
+      </div>
+      <div class="success">
+        ✅ O aplicativo aparecerá na sua tela inicial e funcionará como um app nativo!
+      </div>
+    </div>
+  </div>
+
+  <h2>📋 Preenchendo o Formulário</h2>
+
+  <div class="card">
+    <h3>1. Identificação do Quadro</h3>
+    <p>Preencha os dados básicos:</p>
+    <ul>
+      <li><strong>Nome do Quadro:</strong> Ex.: QD-01, QGBT, QE-Bombas</li>
+      <li><strong>Local:</strong> Sala elétrica, Copa, área externa</li>
+      <li><strong>Data:</strong> Preenchida automaticamente com a data atual</li>
+      <li><strong>Responsável:</strong> Seu nome completo</li>
+      <li><strong>Tensão:</strong> Selecione a tensão nominal do quadro</li>
+    </ul>
+    <div class="tip">
+      💡 <strong>Dica:</strong> Os dados são salvos automaticamente no navegador. Se fechar e reabrir, seus dados estarão lá!
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2. Dispositivos Instalados</h3>
+    <p>Marque os dispositivos presentes no quadro e informe a quantidade:</p>
+    <ul>
+      <li> marque os itens presentes</li>
+      <li> informe a quantidade numérica</li>
+      <li> DPS, DR, contatores, relés, etc.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>3. Checklist de Segurança</h3>
+    <p>Para cada item, marque:</p>
+    <ul>
+      <li><strong>Sim:</strong> está em conformidade</li>
+      <li><strong>Não:</strong> não está em conformidade</li>
+      <li><strong>N/A:</strong> não se aplica</li>
+      <li><strong>Obs:</strong> adicione observações relevantes</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>4. Circuitos (Lado A e Lado B)</h3>
+    <p>Para cada circuito, preencha:</p>
+    <ul>
+      <li><strong>Descrição:</strong> Finalidade do circuito (iluminação, tomadas, etc.)</li>
+      <li><strong>Proteção:</strong> Disjuntor (1P 16A, 2P 20A, etc.)</li>
+      <li><strong>Fase:</strong> A, B, C ou combinações</li>
+      <li><strong>Corrente:</strong> Medida com alicate</li>
+      <li><strong>Estado:</strong> OK, Atenção, Inativo, Manutenção</li>
+    </ul>
+    <div class="tip">
+      💡 Use o botão <strong>"+ Adicionar linha"</strong> para mais circuitos
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>5. Resumo do Quadro</h3>
+    <p>O sistema calcula automaticamente:</p>
+    <ul>
+      <li>Total de circuitos</li>
+      <li>Circuitos por fase</li>
+      <li>Potência (baseado em corrente, tensão e FP)</li>
+      <li>Quantidade de DRs e DPSs</li>
+    </ul>
+    <div class="warning">
+      ⚠️ Você pode editar manualmente a potência se o cálculo automático não coincidir com valores medidos.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>6. Fotos</h3>
+    <div class="step">
+      <div class="step-num">📷</div>
+      <div class="step-content">
+        <strong>Tirar Foto:</strong> Abre a câmera do celular para fotografar o quadro
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">📎</div>
+      <div class="step-content">
+        <strong>Anexar Arquivo:</strong> Seleciona fotos já existentes na galeria
+      </div>
+    </div>
+    <p style="margin-top: 12px; font-size: 14px; color: #6b7280;">
+      Tire fotos do quadro aberto, das etiquetas, dos dispositivos, de qualquer irregularidade encontrada.
+    </p>
+  </div>
+
+  <h2>💾 Salvando e Exportando</h2>
+
+  <div class="card">
+    <h3>Salvamento Automático</h3>
+    <p>Todos os dados são salvos automaticamente no navegador do celular (localStorage).</p>
+    <div class="success">
+      ✅ Se você acidentalmente fechar o aplicativo, os dados permanecem salvos.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Exportar Dados</h3>
+    <p>Para enviar o formulário preenchido:</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">Toque no botão <strong>📤 Exportar</strong> no topo</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">Um arquivo <span class="highlight">.json</span> será baixado</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">Envie por e-mail, WhatsApp ou transferência</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Importar Dados</h3>
+    <p>Para continuar um formulário salvo:</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">Toque em <strong>📥 Importar</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">Selecione o arquivo <span class="highlight">.json</span> exportado anteriormente</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">Os dados serão carregados no formulário</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Novo Formulário</h3>
+    <p>Para iniciar um novo registro:</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">Toque em <strong>📄 Novo Formulário</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">Confirme que deseja limpar os dados</div>
+    </div>
+    <div class="warning">
+      ⚠️ Isso apaga todos os dados do formulário atual. Exporte antes se precisar salvar!
+    </div>
+  </div>
+
+  <h2>🖨️ Imprimir / PDF</h2>
+
+  <div class="card">
+    <p>Para gerar um PDF ou imprimir:</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">Toque em <strong>🖨 Imprimir / PDF</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">No iPhone: Role para baixo e toque em <strong>"Salvar como PDF"</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">No Android: Selecione <strong>"Salvar como PDF"</strong> como destino</div>
+    </div>
+  </div>
+
+  <h2>⚠️ Problemas Comuns</h2>
+
+  <div class="card">
+    <h3>Os dados desapareceram!</h3>
+    <p>Se você limpou os dados do navegador ou usou modo anônimo, os dados podem ter sido perdidos. <strong>Sempre exporte o JSON ao final de cada vistoria.</strong></p>
+  </div>
+
+  <div class="card">
+    <h3>A câmera não abre</h3>
+    <p>Certifique-se de que o navegador tem permissão para acessar a câmera. No iPhone, use o Safari para melhor compatibilidade.</p>
+  </div>
+
+  <div class="card">
+    <h3>Quero continuar em outro dispositivo</h3>
+    <p>Exporte o JSON, envie para si mesmo e importe no outro dispositivo.</p>
+  </div>
+
+  <h2>📚 Fluxo de Trabalho Recomendado</h2>
+
+  <div class="card">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content"><strong>Antes da vistoria:</strong> Instale o app na tela inicial</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content"><strong>No local:</strong> Abra o app, preencha identificação, checklist e circuitos</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content"><strong>Tire fotos:</strong> Quadro aberto, etiquetas, irregularidades</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content"><strong>Ao final:</strong> Exporte o JSON e envie para o responsável</div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content"><strong>Para relatório:</strong> Abra no computador, importe o JSON e gere PDF</div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 32px; padding: 20px; background: #f3f4f6; border-radius: 12px;">
+    <p style="font-size: 14px; color: #6b7280;">
+      Desenvolvido para uso em campo<br>
+      Funciona offline após carregamento inicial
+    </p>
+  </div>
+
+  <a href="quadro_eletrico.html" class="btn" style="display: block; text-align: center; margin-top: 20px;">📱 Abrir Aplicativo</a>
+</div>
+
+<script>
+function showPlatform(platform) {
+  document.querySelectorAll('.platform-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.platform-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById(platform).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

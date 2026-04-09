@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quadro Elétrico">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#111827">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="../icons/apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="../icons/apple-touch-icon-167x167.png">
+<link rel="manifest" href="../manifest.json">
+<title>Ficha de Campo — Quadro Elétrico</title>
+<link rel="stylesheet" href="../css/quadro-eletrico.css">
+<style>
+/* Critical mobile styles inline for faster load */
+html { -webkit-text-size-adjust: 100%; }
+body { -webkit-overflow-scrolling: touch; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="logo">⚡</div>
+  <div>
+    <h1>Ficha de Campo — Quadro Elétrico</h1>
+    <p>Registro técnico de circuitos e dispositivos</p>
+  </div>
+  <div class="import-export-btns">
+    <button onclick="exportData()">📤 Exportar</button>
+    <button onclick="document.getElementById('import-file').click()">📥 Importar</button>
+    <input type="file" id="import-file" class="hidden-input" accept=".json" onchange="importData(event)">
+    <button class="new-form-btn" onclick="newForm()">📄 Novo Formulário</button>
+  </div>
+  <button class="print-btn" onclick="window.print()">🖨 Imprimir / PDF</button>
+</div>
+<div class="save-status" id="save-status">
+  <span id="save-icon">💾</span>
+  <span id="save-text">Salvamento automático ativo</span>
+</div>
+
+<!-- IDENTIFICAÇÃO -->
+<div class="section">
+  <div class="section-title">Identificação do Quadro</div>
+  <div class="fields-grid">
+    <div class="field-group full">
+      <label>Nome / Identificação do Quadro</label>
+      <input type="text" placeholder="Ex.: QD-01 Pavimento Térreo / QGBT / QE-Bombas..." id="nome-quadro">
+    </div>
+    <div class="field-group">
+      <label>Local / Área</label>
+      <input type="text" placeholder="Ex.: Sala elétrica, Copa, Bombas..." id="local">
+    </div>
+    <div class="field-group">
+      <label>Data da Vistoria</label>
+      <input type="date" id="data-vistoria">
+    </div>
+    <div class="field-group">
+      <label>Responsável Técnico</label>
+      <input type="text" placeholder="Nome do responsável" id="responsavel">
+    </div>
+    <div class="field-group">
+      <label>Registro (CREA / CFT)</label>
+      <input type="text" placeholder="Nº do registro" id="registro">
+    </div>
+    <div class="field-group">
+      <label>Tensão Nominal do QD</label>
+      <select id="tensao-qd" class="select-with-other" onchange="handleOtherOption(this, 'tensao-qd-other'); calculatePower()">
+        <option value="">Selecionar...</option>
+        <option value="127/220V — Monofásico">127/220V — Monofásico</option>
+        <option value="220/380V — Trifásico">220/380V — Trifásico</option>
+        <option value="127/220V — Trifásico">127/220V — Trifásico</option>
+        <option value="Outro">Outro</option>
+      </select>
+      <div class="custom-other-wrapper" id="tensao-qd-other-wrapper">
+        <input type="text" class="custom-other-input" placeholder="Especifique a tensão..." id="tensao-qd-other">
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Tipo de Quadro</label>
+      <select id="tipo-qd" class="select-with-other" onchange="handleOtherOption(this, 'tipo-qd-other')">
+        <option value="">Selecionar...</option>
+        <option>QGBT — Quadro Geral de Baixa Tensão</option>
+        <option>QD — Quadro de Distribuição</option>
+        <option>QF — Quadro de Força</option>
+        <option>QC — Quadro de Comando</option>
+        <option value="Outro">Outro</option>
+      </select>
+      <div class="custom-other-wrapper" id="tipo-qd-other-wrapper">
+        <input type="text" class="custom-other-input" placeholder="Especifique o tipo..." id="tipo-qd-other">
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Corrente Nominal (disjuntor geral)</label>
+      <input type="text" placeholder="Ex.: 100A, 200A..." id="corrente-geral">
+    </div>
+  </div>
+</div>
+
+<!-- DISPOSITIVOS ADICIONAIS -->
+<div class="section">
+  <div class="section-title">Dispositivos e Componentes Instalados</div>
+  <div class="devices-grid" id="devices-grid">
+  </div>
+</div>
+
+<!-- OBSERVAÇÕES GERAIS DO QUADRO -->
+<div class="section">
+  <div class="section-title">Estado Geral / Observações</div>
+  <div class="fields-grid" style="margin-bottom: 10px;">
+    <div class="field-group">
+      <label>Estado da Identificação dos Circuitos</label>
+      <select id="estado-identificacao">
+        <option value="">Selecionar...</option>
+        <option>✅ Identificados e legíveis</option>
+        <option>⚠️ Parcialmente identificados</option>
+        <option>❌ Sem identificação</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label>Estado Geral do Quadro</label>
+      <select id="estado-geral-quadro">
+        <option value="">Selecionar...</option>
+        <option>✅ Bom — sem irregularidades</option>
+        <option>⚠️ Regular — manutenção necessária</option>
+        <option>❌ Ruim — intervenção urgente</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label>Aterramento</label>
+      <select id="aterramento">
+        <option value="">Selecionar...</option>
+        <option>✅ Presente e eficaz</option>
+        <option>⚠️ Presente mas não verificado</option>
+        <option>❌ Ausente</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label>Grau de Proteção (IP)</label>
+      <input type="text" id="grau-protecao" placeholder="Ex.: IP40, IP55...">
+    </div>
+  </div>
+  <div class="field-group">
+    <label>Observações Gerais</label>
+    <textarea class="obs-input" id="observacoes-gerais" placeholder="Registre aqui não conformidades, irregularidades, itens para manutenção preventiva ou corretiva..."></textarea>
+  </div>
+</div>
+
+<!-- CHECKLIST DE INSPEÇÃO -->
+<div class="section">
+  <div class="section-title">Checklist de Inspeção de Segurança</div>
+  <table class="inspection-table" id="inspection-table">
+    <thead>
+      <tr>
+        <th>Item de Verificação</th>
+        <th>Sim</th>
+        <th>Não</th>
+        <th>N/A</th>
+        <th>Observação</th>
+      </tr>
+    </thead>
+    <tbody id="inspection-tbody">
+      <!-- Populated by JavaScript -->
+    </tbody>
+  </table>
+</div>
+
+<!-- CIRCUITOS SUPERIORES (LADO A) -->
+<div class="panel-label">
+  <span class="side-badge">LADO A</span>
+  Circuitos — Grupo Superior
+  <span class="bus-info">Barramento: A · B · C · N · PE</span>
+</div>
+<div class="circuit-panel">
+  <table class="circuit-table" id="table-a"></table>
+</div>
+<div class="row-actions">
+  <button class="add-row-btn" onclick="addRow('table-a')">
+    <span>+ Adicionar linha</span>
+  </button>
+  <button class="remove-row-btn" id="remove-row-a" onclick="removeRow('table-a')">
+    <span>− Remover linha vazia</span>
+  </button>
+</div>
+
+<!-- CIRCUITOS INFERIORES (LADO B) -->
+<div class="panel-label" style="margin-top: 2px;">
+  <span class="side-badge">LADO B</span>
+  Circuitos — Grupo Inferior
+  <span class="bus-info">Barramento: A · B · C · N · PE</span>
+</div>
+<div class="circuit-panel">
+  <table class="circuit-table" id="table-b"></table>
+</div>
+<div class="row-actions">
+  <button class="add-row-btn" onclick="addRow('table-b')">
+    <span>+ Adicionar linha</span>
+  </button>
+  <button class="remove-row-btn" id="remove-row-b" onclick="removeRow('table-b')">
+    <span>− Remover linha vazia</span>
+  </button>
+</div>
+
+<!-- RESUMO DO QUADRO -->
+<div class="summary-panel">
+  <h3>📊 Resumo do Quadro</h3>
+  <div class="summary-grid" id="summary-grid">
+    <div class="summary-item">
+      <label>Total de Circuitos</label>
+      <div class="value" id="summary-total-circuits">0</div>
+    </div>
+    <div class="summary-item">
+      <label>Circuitos por Fase</label>
+      <div class="value"><span id="summary-phase-a">0</span>A / <span id="summary-phase-b">0</span>B / <span id="summary-phase-c">0</span>C</div>
+    </div>
+    <div class="summary-item">
+      <label>Corrente Total Medida (A)</label>
+      <div class="value">
+        <input type="number" id="summary-total-current" step="0.1" onchange="calculatePower(); autoSave()">
+        <span class="unit">A</span>
+      </div>
+    </div>
+    <div class="summary-item">
+      <label>Potência Calculada</label>
+      <div class="value" style="display: flex; align-items: center; gap: 6px;">
+        <input type="number" id="summary-power" step="0.01" onchange="setManualPower(); autoSave()">
+        <span class="unit">kW</span>
+        <button class="calc-btn" onclick="calculatePower()" title="Calcular automaticamente">🔄</button>
+      </div>
+    </div>
+    <div class="summary-item">
+      <label>Fator de Potência</label>
+      <div class="value">
+        <input type="number" id="power-factor" step="0.01" min="0.1" max="1" value="0.92" onchange="calculatePower(); autoSave()">
+        <span class="unit">FP</span>
+      </div>
+    </div>
+    <div class="summary-item">
+      <label>Disjuntores com DR</label>
+      <div class="value" id="summary-dr-count">0</div>
+    </div>
+    <div class="summary-item">
+      <label>Disjuntores com DPS</label>
+      <div class="value" id="summary-dps-count">0</div>
+    </div>
+    <div class="summary-item">
+      <label>Circuitos em Alerta</label>
+      <div class="value" id="summary-alert-count">0</div>
+    </div>
+    <div class="summary-item">
+      <label>Circuitos Inativos</label>
+      <div class="value" id="summary-inactive-count">0</div>
+    </div>
+  </div>
+  <div style="margin-top: 12px; font-size: 11px; color: var(--gray-600);">
+    <em>* A potência é calculada automaticamente baseada na corrente total, tensão e fator de potência. Clique em 🔄 para recalcular ou edite manualmente se necessário.</em>
+  </div>
+</div>
+
+<!-- FOTOS / ANEXOS -->
+<div class="section">
+  <div class="section-title">Fotos e Anexos</div>
+  <div class="photos-actions">
+    <button class="add-row-btn" onclick="capturePhoto()" style="margin: 0 8px 0 0;">
+      <span>📷 Tirar Foto</span>
+    </button>
+    <button class="add-row-btn" onclick="attachFile()" style="margin: 0;">
+      <span>📎 Anexar Arquivo</span>
+    </button>
+    <input type="file" id="camera-input" class="hidden-input" accept="image/*" capture="environment" onchange="handlePhotoCapture(event)">
+    <input type="file" id="file-input" class="hidden-input" accept="image/*,.pdf" multiple onchange="handleFileAttach(event)">
+  </div>
+  <div class="photos-grid" id="photos-grid">
+    <!-- Photos will be added here dynamically -->
+  </div>
+</div>
+
+<!-- ASSINATURA -->
+<div class="section" style="margin-top: 8px;">
+  <div class="section-title">Assinatura e Responsabilidade</div>
+  <div class="fields-grid">
+    <div class="field-group">
+      <label>Técnico Responsável pelo Preenchimento</label>
+      <input type="text" placeholder="Nome completo" id="tecnico-responsavel">
+    </div>
+    <div class="field-group">
+      <label>Data / Hora</label>
+      <input type="datetime-local" id="data-hora-assinatura">
+    </div>
+    <div class="field-group full">
+      <label>Observações Finais / Recomendações</label>
+      <textarea class="obs-input" style="min-height: 60px;" placeholder="Recomendações técnicas, prazos, ações imediatas..." id="obs-finais"></textarea>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── HANDLE "OTHER" OPTION ───────────────────────────────
+function handleOtherOption(selectEl, otherInputId) {
+  const wrapperId = otherInputId + '-wrapper';
+  const wrapper = document.getElementById(wrapperId);
+  if (selectEl.value === 'Outro') {
+    wrapper.classList.add('visible');
+    selectEl.classList.add('has-custom');
+  } else {
+    wrapper.classList.remove('visible');
+    selectEl.classList.remove('has-custom');
+  }
+  autoSave();
+}
+
+// ─── INSPECTION CHECKLIST ───────────────────────────────
+const inspectionQuestions = [
+  'Existe identificação nos painéis?',
+  'Existe aterramento das partes metálicas que possuam ou não finalidade de condução de energia elétrica (portas)?',
+  'Existe bloqueio ou trava na porta para acesso somente dos eletricistas?',
+  'Há área livre para acesso ao painel?',
+  'Existe o diagrama unifilar ou funcional instalado no painel?',
+  'Visualmente os dispositivos de proteção encontrados no painel estão funcionando?',
+  'Existe proteção mecânica nos barramentos?',
+  'Existe a etiqueta: Somente Pessoas Autorizadas, no painel?',
+  'Existe a etiqueta: Risco de Choque Elétrico, no painel?',
+  'Existe a etiqueta: Tensão do Painel, no painel?',
+  'Os barramentos e cabos energizados possuem proteção, barreiras ou distância adequada?',
+  'O dispositivo de proteção contra surtos está presente?',
+  'Existe mais de um circuito ligado no mesmo disjuntor?'
+];
+
+function buildInspectionTable() {
+  const tbody = document.getElementById('inspection-tbody');
+  tbody.innerHTML = '';
+
+  inspectionQuestions.forEach((question, index) => {
+    const tr = document.createElement('tr');
+    const nameBase = `insp-${index}`;
+
+    tr.innerHTML = `
+      <td class="question-cell">${question}</td>
+      <td class="radio-cell"><input type="radio" name="${nameBase}" value="sim" onchange="autoSave()"></td>
+      <td class="radio-cell"><input type="radio" name="${nameBase}" value="nao" onchange="autoSave()"></td>
+      <td class="radio-cell"><input type="radio" name="${nameBase}" value="na" onchange="autoSave()"></td>
+      <td class="obs-cell"><input type="text" placeholder="Obs..." onchange="autoSave()"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+buildInspectionTable();
+
+// ─── DISPOSITIVOS COM QUANTIDADE ───────────────────────────────────────
+const devices = [
+  { id: 'dps', label: 'DPS', sub: 'Prot. contra Surtos' },
+  { id: 'dr', label: 'DR / DDR', sub: 'Diferencial Residual' },
+  { id: 'dps_dr', label: 'DPDT / RCCB', sub: 'DDR combinado' },
+  { id: 'contator', label: 'Contator', sub: 'CWM / LC...' },
+  { id: 'rele', label: 'Relé', sub: 'Térmico / Aux.' },
+  { id: 'timer', label: 'Timer', sub: 'Temporizador' },
+  { id: 'jumper', label: 'Jumper', sub: 'Ponte/Elo' },
+  { id: 'chave_sel', label: 'Ch. Seletora', sub: 'Rotativa / Cam' },
+  { id: 'botoeira', label: 'Botoeira', sub: 'Liga / Desliga' },
+  { id: 'sinot', label: 'Sinalizador', sub: 'Piloto / LED' },
+  { id: 'clp', label: 'CLP / PLC', sub: 'Controlador' },
+  { id: 'ihm', label: 'IHM', sub: 'Interface HMI' },
+  { id: 'inv_freq', label: 'Inversor Freq.', sub: 'VFD / Drive' },
+  { id: 'soft', label: 'Soft-Starter', sub: 'Partida suave' },
+  { id: 'trafo', label: 'Transformador', sub: 'Trafo tensão' },
+  { id: 'capac', label: 'Capacitor', sub: 'Banco de cap.' },
+  { id: 'amper', label: 'Amperímetro', sub: 'Medição A' },
+  { id: 'voltim', label: 'Voltímetro', sub: 'Medição V' },
+  { id: 'medidor', label: 'Medidor Energ.', sub: 'kWh / analisador' },
+  { id: 'nobreak', label: 'No-Break / UPS', sub: 'Backup energia' },
+  { id: 'barr', label: 'Barramento Cu', sub: 'Bus bar' },
+  { id: 'outro', label: 'Outro', sub: 'Especificar' },
+];
+
+const grid = document.getElementById('devices-grid');
+devices.forEach(d => {
+  const chip = document.createElement('label');
+  chip.className = 'device-chip';
+  chip.innerHTML = `
+    <input type="checkbox" id="dev-${d.id}">
+    <div class="chip-box"></div>
+    <div>
+      <span>${d.label}</span><br>
+      <span class="device-qty">${d.sub}</span>
+      <input type="number" class="device-qty-input" id="dev-qty-${d.id}" min="1" placeholder="Qtd" style="display:none;" onchange="autoSave()">
+    </div>`;
+  chip.querySelector('input[type="checkbox"]').addEventListener('change', function() {
+    chip.classList.toggle('checked', this.checked);
+    const qtyInput = chip.querySelector('.device-qty-input');
+    qtyInput.style.display = this.checked ? 'inline-block' : 'none';
+    if (this.checked) qtyInput.focus();
+    autoSave();
+  });
+  grid.appendChild(chip);
+});
+
+// ─── CIRCUIT TABLE BUILDER ───────────────────────────────
+const COLS = [
+  { key: 'num', label: 'Nº', w: '30px', type: 'num' },
+  { key: 'desc', label: 'Descrição / Finalidade', w: '200px', type: 'text', ph: 'Ex.: Tomadas sala 01, Iluminação corredor...' },
+  { key: 'prot', label: 'Proteção', w: '70px', type: 'select-with-other', opts: ['—','1P 6A','1P 10A','1P 16A','1P 20A','1P 25A','1P 32A','1P 40A','1P 50A','1P 63A','2P 10A','2P 16A','2P 20A','2P 25A','2P 32A','2P 40A','2P 50A','2P 63A','3P 10A','3P 16A','3P 20A','3P 25A','3P 32A','3P 40A','3P 50A','3P 63A','3P 80A','3P 100A','3P 125A','3P 160A','3P 200A','Outro'] },
+  { key: 'tensao', label: 'Tensão', w: '65px', type: 'select', opts: ['—','127V','220V','380V'] },
+  { key: 'fase', label: 'Fase', w: '50px', type: 'select', opts: ['—','A','B','C','A+N','B+N','C+N','A+B','B+C','A+C','A+B+C'] },
+  { key: 'corr', label: 'Corrente Med.', w: '75px', type: 'text', ph: 'A' },
+  { key: 'secao', label: 'Seção (mm²)', w: '80px', type: 'select-with-other', opts: ['—','1,5','2,5','4','6','10','16','25','35','50','70','95','120','150','Outro'] },
+  { key: 'dr', label: 'DR?', w: '40px', type: 'check' },
+  { key: 'dps', label: 'DPS?', w: '40px', type: 'check' },
+  { key: 'estado', label: 'Estado', w: '80px', type: 'select-with-other', opts: ['—','✅ OK','⚠️ Atenção','❌ Inativo','🔧 Manut.','Outro'] },
+  { key: 'obs', label: 'Obs.', w: '120px', type: 'text', ph: '' },
+];
+
+let rowCounterA = 24;
+let rowCounterB = 24;
+
+function createTableCell(c, rowNum) {
+  const td = document.createElement('td');
+  if (c.type === 'num') {
+    td.className = 'num-cell';
+    td.textContent = rowNum;
+  } else if (c.type === 'text') {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = c.ph || '';
+    inp.style.minWidth = c.w;
+    inp.addEventListener('input', autoSave);
+    td.appendChild(inp);
+  } else if (c.type === 'select' || c.type === 'select-with-other') {
+    const sel = document.createElement('select');
+    sel.className = 'status-select';
+    sel.style.width = '100%';
+    (c.opts || []).forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o; opt.textContent = o;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', function() {
+      autoSave();
+      if (c.type === 'select-with-other') {
+        let wrapper = td.querySelector('.custom-other-wrapper');
+        if (this.value === 'Outro') {
+          if (!wrapper) {
+            wrapper = document.createElement('div');
+            wrapper.className = 'custom-other-wrapper visible';
+            const customInput = document.createElement('input');
+            customInput.type = 'text';
+            customInput.className = 'custom-other-input';
+            customInput.placeholder = 'Especificar...';
+            customInput.addEventListener('input', autoSave);
+            wrapper.appendChild(customInput);
+            td.appendChild(wrapper);
+          } else {
+            wrapper.classList.add('visible');
+          }
+          sel.classList.add('has-custom');
+        } else {
+          if (wrapper) {
+            wrapper.classList.remove('visible');
+          }
+          sel.classList.remove('has-custom');
+        }
+      }
+    });
+    td.appendChild(sel);
+  } else if (c.type === 'check') {
+    td.style.textAlign = 'center';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.style.width = '18px'; cb.style.height = '18px'; cb.style.cursor = 'pointer';
+    cb.addEventListener('change', autoSave);
+    td.appendChild(cb);
+  }
+  return td;
+}
+
+function buildTable(tableId, prefix, count) {
+  const table = document.getElementById(tableId);
+  // THEAD
+  const thead = document.createElement('thead');
+  const tr = document.createElement('tr');
+  COLS.forEach(c => {
+    const th = document.createElement('th');
+    th.textContent = c.label;
+    th.style.minWidth = c.w;
+    tr.appendChild(th);
+  });
+  thead.appendChild(tr);
+  table.appendChild(thead);
+
+  // TBODY
+  const tbody = document.createElement('tbody');
+  for (let i = 1; i <= count; i++) {
+    const row = document.createElement('tr');
+    COLS.forEach(c => {
+      const td = createTableCell(c, i);
+      row.appendChild(td);
+    });
+    tbody.appendChild(row);
+  }
+  table.appendChild(tbody);
+}
+
+function addRow(tableId) {
+  const table = document.getElementById(tableId);
+  const tbody = table.querySelector('tbody');
+  const counter = tableId === 'table-a' ? ++rowCounterA : ++rowCounterB;
+
+  const row = document.createElement('tr');
+  COLS.forEach(c => {
+    const td = createTableCell(c, counter);
+    row.appendChild(td);
+  });
+  tbody.appendChild(row);
+  updateRemoveButtons();
+  updateSummary();
+  autoSave();
+}
+
+function isRowEmpty(row) {
+  const inputs = row.querySelectorAll('input[type="text"]');
+  const selects = row.querySelectorAll('select');
+  const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+
+  for (const inp of inputs) {
+    if (inp.value.trim() !== '') return false;
+  }
+  for (const sel of selects) {
+    if (sel.value !== '—' && sel.value !== '') return false;
+  }
+  for (const cb of checkboxes) {
+    if (cb.checked) return false;
+  }
+  return true;
+}
+
+function updateRemoveButtons() {
+  const tableA = document.getElementById('table-a');
+  const tableB = document.getElementById('table-b');
+  const btnA = document.getElementById('remove-row-a');
+  const btnB = document.getElementById('remove-row-b');
+
+  const rowsA = tableA.querySelectorAll('tbody tr');
+  const rowsB = tableB.querySelectorAll('tbody tr');
+
+  // Enable remove button only if last row is empty and there are more than 24 rows
+  if (rowsA.length > 24 && isRowEmpty(rowsA[rowsA.length - 1])) {
+    btnA.classList.add('enabled');
+  } else {
+    btnA.classList.remove('enabled');
+  }
+
+  if (rowsB.length > 24 && isRowEmpty(rowsB[rowsB.length - 1])) {
+    btnB.classList.add('enabled');
+  } else {
+    btnB.classList.remove('enabled');
+  }
+}
+
+function removeRow(tableId) {
+  const table = document.getElementById(tableId);
+  const tbody = table.querySelector('tbody');
+  const rows = tbody.querySelectorAll('tr');
+
+  if (rows.length > 24) {
+    const lastRow = rows[rows.length - 1];
+    if (isRowEmpty(lastRow)) {
+      tbody.removeChild(lastRow);
+      if (tableId === 'table-a') rowCounterA--;
+      else rowCounterB--;
+      renumberRows(tableId);
+      updateRemoveButtons();
+      updateSummary();
+      autoSave();
+    }
+  }
+}
+
+function renumberRows(tableId) {
+  const table = document.getElementById(tableId);
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach((row, index) => {
+    const numCell = row.querySelector('.num-cell');
+    if (numCell) numCell.textContent = index + 1;
+  });
+}
+
+buildTable('table-a', 'A', 24);
+buildTable('table-b', 'B', 24);
+
+// Auto-set today's date
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('data-vistoria').value = today;
+
+// ─── SUMMARY CALCULATIONS ─────────────────────────－－－－－－－－－－－－－－
+let manualPowerOverride = false;
+
+function updateSummary() {
+  const tableA = document.getElementById('table-a');
+  const tableB = document.getElementById('table-b');
+
+  const rowsA = tableA.querySelectorAll('tbody tr');
+  const rowsB = tableB.querySelectorAll('tbody tr');
+
+  let totalCircuits = 0;
+  let phaseA = 0, phaseB = 0, phaseC = 0;
+  let drCount = 0, dpsCount = 0;
+  let alertCount = 0, inactiveCount = 0;
+
+  const allRows = [...rowsA, ...rowsB];
+
+  allRows.forEach(row => {
+    const inputs = row.querySelectorAll('input[type="text"]');
+    const selects = row.querySelectorAll('select');
+    const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+
+    const desc = inputs[0]?.value?.trim() || '';
+    const fase = selects[2]?.value || '';
+    const estado = selects[4]?.value || '';
+    const dr = checkboxes[0]?.checked || false;
+    const dps = checkboxes[1]?.checked || false;
+
+    if (desc !== '') {
+      totalCircuits++;
+
+      // Count phases
+      if (fase.includes('A') && !fase.includes('+')) phaseA++;
+      else if (fase.includes('A+N')) phaseA++;
+      else if (fase.includes('A+B')) { phaseA++; phaseB++; }
+      else if (fase.includes('A+C')) { phaseA++; phaseC++; }
+      else if (fase.includes('A+B+C')) { phaseA++; phaseB++; phaseC++; }
+
+      if (fase.includes('B') && !fase.includes('+') && !fase.includes('A')) phaseB++;
+      if (fase.includes('C') && !fase.includes('+') && !fase.includes('A')) phaseC++;
+      if (fase.includes('B+C')) { phaseB++; phaseC++; }
+
+      // Count DR and DPS
+      if (dr) drCount++;
+      if (dps) dpsCount++;
+
+      // Count alerts and inactive
+      if (estado === '⚠️ Atenção') alertCount++;
+      if (estado === '❌ Inativo' || estado === '🔧 Manut.') inactiveCount++;
+    }
+  });
+
+  document.getElementById('summary-total-circuits').textContent = totalCircuits;
+  document.getElementById('summary-phase-a').textContent = phaseA;
+  document.getElementById('summary-phase-b').textContent = phaseB;
+  document.getElementById('summary-phase-c').textContent = phaseC;
+  document.getElementById('summary-dr-count').textContent = drCount;
+  document.getElementById('summary-dps-count').textContent = dpsCount;
+  document.getElementById('summary-alert-count').textContent = alertCount;
+  document.getElementById('summary-inactive-count').textContent = inactiveCount;
+}
+
+function calculatePower() {
+  if (manualPowerOverride) return;
+
+  const currentInput = document.getElementById('summary-total-current');
+  const powerInput = document.getElementById('summary-power');
+  const fpInput = document.getElementById('power-factor');
+  const tensaoSelect = document.getElementById('tensao-qd');
+
+  const current = parseFloat(currentInput.value) || 0;
+  const fp = parseFloat(fpInput.value) || 0.92;
+  const tensao = tensaoSelect.value;
+
+  let voltage = 220;
+  let numPhases = 3;
+
+  if (tensao.includes('127/220') && tensao.includes('Monofásico')) {
+    voltage = 127;
+    numPhases = 1;
+  } else if (tensao.includes('220/380')) {
+    voltage = 220;
+    numPhases = 3;
+  } else if (tensao.includes('127/220') && tensao.includes('Trifásico')) {
+    voltage = 127;
+    numPhases = 3;
+  }
+
+  // P = V * I * FP * √3 (para trifásico) ou P = V * I * FP (para monofásico)
+  const sqrt3 = Math.sqrt(3);
+  let power = 0;
+
+  if (numPhases === 3) {
+    power = (voltage * current * fp * sqrt3) / 1000; // kW
+  } else {
+    power = (voltage * current * fp) / 1000; // kW
+  }
+
+  powerInput.value = power.toFixed(2);
+  autoSave();
+}
+
+function setManualPower() {
+  manualPowerOverride = true;
+  autoSave();
+}
+
+function clearManualPowerOverride() {
+  manualPowerOverride = false;
+}
+
+// ─── PHOTOS MANAGEMENT ─────────────────────────－－－－－－－－－－－－－－－－
+const photosStorage = [];
+let photoCounter = 0;
+
+function capturePhoto() {
+  document.getElementById('camera-input').click();
+}
+
+function attachFile() {
+  document.getElementById('file-input').click();
+}
+
+function handlePhotoCapture(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    addPhotoCard(e.target.result, 'camera');
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function handleFileAttach(event) {
+  const files = event.target.files;
+  if (!files.length) return;
+
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      addPhotoCard(e.target.result, 'file', file.name);
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+
+function addPhotoCard(imageData, source, fileName = '') {
+  const grid = document.getElementById('photos-grid');
+  const card = document.createElement('div');
+  card.className = 'photo-card has-image';
+  card.dataset.id = photoCounter++;
+
+  const img = document.createElement('img');
+  img.src = imageData;
+  img.alt = fileName || 'Foto do quadro';
+
+  const actions = document.createElement('div');
+  actions.className = 'photo-actions';
+  actions.innerHTML = `
+    <button onclick="removePhoto(this)" title="Remover">🗑</button>
+  `;
+
+  card.appendChild(img);
+  card.appendChild(actions);
+  grid.appendChild(card);
+
+  photosStorage.push({
+    id: card.dataset.id,
+    data: imageData,
+    source: source,
+    fileName: fileName
+  });
+
+  autoSave();
+}
+
+function addPhotoSlot() {
+  // Deprecated - use capturePhoto or attachFile instead
+  attachFile();
+}
+
+function removePhoto(btn) {
+  const card = btn.closest('.photo-card');
+  const id = card.dataset.id;
+
+  const index = photosStorage.findIndex(p => p.id === id);
+  if (index > -1) photosStorage.splice(index, 1);
+
+  card.remove();
+  autoSave();
+}
+
+// ─── NEW FORM ─────────────────────────－－－－－－－－－－－－－－－－－－－－
+function newForm() {
+  if (confirm('Isso irá limpar todos os dados do formulário. Deseja continuar?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+// ─── AUTO-SAVE FUNCTIONALITY ───────────────────────────────
+const STORAGE_KEY = 'quadro-eletrico-data';
+let saveTimeout = null;
+
+function getFormData() {
+  const data = {
+    // Identificação
+    nomeQuadro: document.getElementById('nome-quadro').value,
+    local: document.getElementById('local').value,
+    dataVistoria: document.getElementById('data-vistoria').value,
+    responsavel: document.getElementById('responsavel').value,
+    registro: document.getElementById('registro').value,
+    tensaoQd: document.getElementById('tensao-qd').value,
+    tensaoQdOther: document.getElementById('tensao-qd-other')?.value || '',
+    tipoQd: document.getElementById('tipo-qd').value,
+    tipoQdOther: document.getElementById('tipo-qd-other')?.value || '',
+    correnteGeral: document.getElementById('corrente-geral').value,
+
+    // Dispositivos
+    devices: {},
+
+    // Estado Geral
+    estadoIdentificacao: document.getElementById('estado-identificacao')?.value || '',
+    estadoGeral: document.getElementById('estado-geral-quadro')?.value || '',
+    aterramento: document.getElementById('aterramento')?.value || '',
+    grauProtecao: document.getElementById('grau-protecao')?.value || '',
+    observacoesGerais: document.getElementById('observacoes-gerais')?.value || '',
+
+    // Checklist de inspeção
+    inspectionChecklist: getInspectionData(),
+
+    // Tabelas de circuitos
+    circuitsA: [],
+    circuitsB: [],
+
+    // Summary
+    totalCurrent: document.getElementById('summary-total-current')?.value || '',
+    power: document.getElementById('summary-power')?.value || '',
+    powerFactor: document.getElementById('power-factor')?.value || '',
+    manualPowerOverride: manualPowerOverride,
+
+    // Fotos
+    photos: photosStorage,
+
+    // Assinatura
+    tecnicoResponsavel: document.getElementById('tecnico-responsavel')?.value || '',
+    dataHora: document.getElementById('data-hora-assinatura')?.value || '',
+    obsFinais: document.getElementById('obs-finais')?.value || '',
+
+    // Metadata
+    rowCounterA: rowCounterA,
+    rowCounterB: rowCounterB,
+    savedAt: new Date().toISOString()
+  };
+
+  // Dispositivos
+  devices.forEach(d => {
+    const checkbox = document.getElementById(`dev-${d.id}`);
+    const qtyInput = document.getElementById(`dev-qty-${d.id}`);
+    data.devices[d.id] = {
+      checked: checkbox?.checked || false,
+      qty: qtyInput?.value || ''
+    };
+  });
+
+  // Circuitos tabela A
+  const tableA = document.getElementById('table-a');
+  const rowsA = tableA.querySelectorAll('tbody tr');
+  rowsA.forEach((row, i) => {
+    data.circuitsA.push(getRowData(row, i));
+  });
+
+  // Circuitos tabela B
+  const tableB = document.getElementById('table-b');
+  const rowsB = tableB.querySelectorAll('tbody tr');
+  rowsB.forEach((row, i) => {
+    data.circuitsB.push(getRowData(row, i));
+  });
+
+  return data;
+}
+
+function getInspectionData() {
+  const items = [];
+  const rows = document.querySelectorAll('#inspection-tbody tr');
+  rows.forEach((row, index) => {
+    const radios = row.querySelectorAll('input[type="radio"]');
+    const obsInput = row.querySelector('.obs-cell input');
+    let value = '';
+    radios.forEach(r => { if (r.checked) value = r.value; });
+    items.push({
+      question: inspectionQuestions[index],
+      value: value,
+      obs: obsInput?.value || ''
+    });
+  });
+  return items;
+}
+
+function getRowData(row, index) {
+  const inputs = row.querySelectorAll('input[type="text"]');
+  const selects = row.querySelectorAll('select');
+  const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+
+  const protSelect = selects[0];
+  const protOther = protSelect?.parentElement.querySelector('.custom-other-input')?.value || '';
+
+  const secaoSelect = selects[3];
+  const secaoOther = secaoSelect?.parentElement.querySelector('.custom-other-input')?.value || '';
+
+  const estadoSelect = selects[4];
+  const estadoOther = estadoSelect?.parentElement.querySelector('.custom-other-input')?.value || '';
+
+  return {
+    num: index + 1,
+    desc: inputs[0]?.value || '',
+    prot: protSelect?.value || '',
+    protOther: protOther,
+    tensao: selects[1]?.value || '',
+    fase: selects[2]?.value || '',
+    secao: secaoSelect?.value || '',
+    secaoOther: secaoOther,
+    corr: inputs[1]?.value || '',
+    dr: checkboxes[0]?.checked || false,
+    dps: checkboxes[1]?.checked || false,
+    estado: estadoSelect?.value || '',
+    estadoOther: estadoOther,
+    obs: inputs[2]?.value || ''
+  };
+}
+
+function autoSave() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    try {
+      const data = getFormData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      showSaveStatus('saved');
+    } catch (e) {
+      showSaveStatus('error');
+    }
+  }, 500);
+  updateSummary();
+}
+
+function showSaveStatus(status) {
+  const statusEl = document.getElementById('save-status');
+  const textEl = document.getElementById('save-text');
+  const iconEl = document.getElementById('save-icon');
+
+  if (status === 'saved') {
+    textEl.textContent = 'Salvo automaticamente';
+    iconEl.textContent = '✓';
+    statusEl.classList.add('saved');
+    setTimeout(() => {
+      textEl.textContent = 'Salvamento automático ativo';
+      iconEl.textContent = '💾';
+      statusEl.classList.remove('saved');
+    }, 2000);
+  } else if (status === 'error') {
+    textEl.textContent = 'Erro ao salvar';
+    iconEl.textContent = '⚠';
+    statusEl.classList.remove('saved');
+  }
+}
+
+function loadFormData(data) {
+  // Identificação
+  document.getElementById('nome-quadro').value = data.nomeQuadro || '';
+  document.getElementById('local').value = data.local || '';
+  document.getElementById('data-vistoria').value = data.dataVistoria || today;
+  document.getElementById('responsavel').value = data.responsavel || '';
+  document.getElementById('registro').value = data.registro || '';
+  document.getElementById('tensao-qd').value = data.tensaoQd || '';
+  document.getElementById('corrente-geral').value = data.correnteGeral || '';
+
+  // Tipo QD
+  document.getElementById('tipo-qd').value = data.tipoQd || '';
+
+  // Handle "Outro" fields
+  if (data.tensaoQd === 'Outro' && data.tensaoQdOther) {
+    handleOtherOption(document.getElementById('tensao-qd'), 'tensao-qd-other');
+    document.getElementById('tensao-qd-other').value = data.tensaoQdOther;
+  }
+  if (data.tipoQd === 'Outro' && data.tipoQdOther) {
+    handleOtherOption(document.getElementById('tipo-qd'), 'tipo-qd-other');
+    document.getElementById('tipo-qd-other').value = data.tipoQdOther;
+  }
+
+  // Dispositivos
+  if (data.devices) {
+    devices.forEach(d => {
+      const checkbox = document.getElementById(`dev-${d.id}`);
+      const qtyInput = document.getElementById(`dev-qty-${d.id}`);
+      const chip = checkbox?.closest('.device-chip');
+
+      if (data.devices[d.id]) {
+        checkbox.checked = data.devices[d.id].checked;
+        if (data.devices[d.id].checked) {
+          chip?.classList.add('checked');
+          qtyInput.style.display = 'inline-block';
+        }
+        qtyInput.value = data.devices[d.id].qty || '';
+      }
+    });
+  }
+
+  // Estado Geral
+  document.getElementById('estado-identificacao').value = data.estadoIdentificacao || '';
+  document.getElementById('estado-geral-quadro').value = data.estadoGeral || '';
+  document.getElementById('aterramento').value = data.aterramento || '';
+  document.getElementById('grau-protecao').value = data.grauProtecao || '';
+  document.getElementById('observacoes-gerais').value = data.observacoesGerais || '';
+
+  // Checklist de inspeção
+  if (data.inspectionChecklist && data.inspectionChecklist.length) {
+    const rows = document.querySelectorAll('#inspection-tbody tr');
+    data.inspectionChecklist.forEach((item, index) => {
+      if (rows[index]) {
+        const radios = rows[index].querySelectorAll('input[type="radio"]');
+        const obsInput = rows[index].querySelector('.obs-cell input');
+        radios.forEach(r => { if (r.value === item.value) r.checked = true; });
+        if (obsInput) obsInput.value = item.obs || '';
+      }
+    });
+  }
+
+  // Summary
+  document.getElementById('summary-total-current').value = data.totalCurrent || '';
+  document.getElementById('summary-power').value = data.power || '';
+  document.getElementById('power-factor').value = data.powerFactor || '0.92';
+  manualPowerOverride = data.manualPowerOverride || false;
+
+  // Photos
+  if (data.photos && data.photos.length) {
+    data.photos.forEach(photo => {
+      addPhotoCard(photo.data, photo.source, photo.fileName);
+    });
+  }
+
+  // Restaurar contadores de linhas e adicionar linhas extras
+  if (data.rowCounterA && data.rowCounterA > 24) {
+    for (let i = 24; i < data.rowCounterA; i++) addRow('table-a');
+  }
+  if (data.rowCounterB && data.rowCounterB > 24) {
+    for (let i = 24; i < data.rowCounterB; i++) addRow('table-b');
+  }
+
+  // Load circuits
+  if (data.circuitsA && data.circuitsA.length) {
+    const rowsA = document.querySelectorAll('#table-a tbody tr');
+    data.circuitsA.forEach((c, i) => {
+      if (rowsA[i]) setRowData(rowsA[i], c);
+    });
+  }
+
+  if (data.circuitsB && data.circuitsB.length) {
+    const rowsB = document.querySelectorAll('#table-b tbody tr');
+    data.circuitsB.forEach((c, i) => {
+      if (rowsB[i]) setRowData(rowsB[i], c);
+    });
+  }
+
+  // Assinatura
+  document.getElementById('tecnico-responsavel').value = data.tecnicoResponsavel || '';
+  document.getElementById('data-hora-assinatura').value = data.dataHora || '';
+  document.getElementById('obs-finais').value = data.obsFinais || '';
+
+  updateRemoveButtons();
+  updateSummary();
+}
+
+function setRowData(row, data) {
+  const inputs = row.querySelectorAll('input[type="text"]');
+  const selects = row.querySelectorAll('select');
+  const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+
+  inputs[0].value = data.desc || '';
+  inputs[1].value = data.corr || '';
+  inputs[2].value = data.obs || '';
+
+  selects[0].value = data.prot || '';
+  if (data.prot === 'Outro' && data.protOther) {
+    selects[0].dispatchEvent(new Event('change'));
+    const otherInput = selects[0].parentElement.querySelector('.custom-other-input');
+    if (otherInput) otherInput.value = data.protOther;
+  }
+
+  selects[1].value = data.tensao || '';
+  selects[2].value = data.fase || '';
+
+  selects[3].value = data.secao || '';
+  if (data.secao === 'Outro' && data.secaoOther) {
+    selects[3].dispatchEvent(new Event('change'));
+    const otherInput = selects[3].parentElement.querySelector('.custom-other-input');
+    if (otherInput) otherInput.value = data.secaoOther;
+  }
+
+  checkboxes[0].checked = data.dr || false;
+  checkboxes[1].checked = data.dps || false;
+
+  selects[4].value = data.estado || '';
+  if (data.estado === 'Outro' && data.estadoOther) {
+    selects[4].dispatchEvent(new Event('change'));
+    const otherInput = selects[4].parentElement.querySelector('.custom-other-input');
+    if (otherInput) otherInput.value = data.estadoOther;
+  }
+}
+
+// ─── EXPORT/IMPORT JSON ───────────────────────────────────
+function exportData() {
+  const data = getFormData();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const nome = (data.nomeQuadro || 'quadro-eletrico').replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  a.download = `${nome}_${dateStr}.json`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      // Limpar tabelas existentes e recriar
+      const tableA = document.getElementById('table-a');
+      const tableB = document.getElementById('table-b');
+      tableA.innerHTML = '';
+      tableB.innerHTML = '';
+      rowCounterA = 24;
+      rowCounterB = 24;
+
+      buildTable('table-a', 'A', 24);
+      buildTable('table-b', 'B', 24);
+
+      // Limpar fotos
+      document.getElementById('photos-grid').innerHTML = '';
+      photosStorage.length = 0;
+
+      // Carregar dados
+      loadFormData(data);
+
+      showSaveStatus('saved');
+    } catch (err) {
+      alert('Erro ao importar arquivo. Verifique se é um JSON válido.');
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = ''; // Reset input
+}
+
+// ─── INITIALIZE ────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  // Load saved data
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      loadFormData(data);
+    } catch (e) {
+      console.error('Erro ao carregar dados salvos:', e);
+    }
+  }
+
+  // Add event listeners for auto-save
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('input', autoSave);
+    el.addEventListener('change', autoSave);
+  });
+
+  // Initial summary update
+  updateSummary();
+  updateRemoveButtons();
+});
+
+// ─── SERVICE WORKER FOR PWA ───────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('../sw.js')
+      .then(function(registration) {
+        console.log('ServiceWorker registrado: ', registration.scope);
+      })
+      .catch(function(error) {
+        console.log('Falha ao registrar ServiceWorker: ', error);
+      });
+  });
+}
+</script>
+</body>
+</html>
