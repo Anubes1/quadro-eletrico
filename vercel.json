@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/api/submit", "destination": "/api/submit.js" },
+    { "source": "/api/export",  "destination": "/api/export.js"  },
     {
       "source": "/",
       "destination": "/html/quadro_eletrico.html"

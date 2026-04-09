@@ -35,6 +35,7 @@ body { -webkit-overflow-scrolling: touch; }
   </div>
   <div class="import-export-btns">
     <button onclick="exportData()">📤 Exportar</button>
+    <button id="btn-enviar-servidor" onclick="sendToServer()" style="background:#16a34a;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;">☁️ Enviar ao Servidor</button>
     <button onclick="document.getElementById('import-file').click()">📥 Importar</button>
     <input type="file" id="import-file" class="hidden-input" accept=".json" onchange="importData(event)">
     <button class="new-form-btn" onclick="newForm()">📄 Novo Formulário</button>
@@ -1310,6 +1311,75 @@ function exportData() {
   const photosCount = data.photos ? data.photos.length : 0;
   showExportFeedback(sizeKB, photosCount);
 }
+
+// ─── ENVIO AO SERVIDOR (Vercel KV) ───────────────────────────────────────────
+async function sendToServer() {
+  const btn = document.getElementById('btn-enviar-servidor');
+
+  // Validação mínima
+  const nomeQuadro = document.getElementById('nome-quadro').value.trim();
+  const responsavel = document.getElementById('responsavel').value.trim();
+  if (!nomeQuadro || !responsavel) {
+    showServerToast('⚠️ Preencha ao menos o Nome do Quadro e o Responsável antes de enviar.', '#b45309');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Enviando...';
+
+  try {
+    const data = getFormData();
+    // Remove fotos do payload para evitar timeout (fotos ficam no export local)
+    const payload = { ...data, photos: [] };
+
+    const resposta = await fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const resultado = await resposta.json();
+
+    if (resposta.ok && resultado.sucesso) {
+      showServerToast('✅ ' + resultado.mensagem + ' (Total no servidor: ' + resultado.totalRegistros + ')', '#15803d');
+    } else {
+      showServerToast('❌ Erro: ' + (resultado.erro || 'Falha desconhecida'), '#b91c1c');
+    }
+  } catch (err) {
+    showServerToast('❌ Falha de conexão: ' + err.message, '#b91c1c');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '☁️ Enviar ao Servidor';
+  }
+}
+
+function showServerToast(mensagem, cor) {
+  const toast = document.createElement('div');
+  toast.style.cssText = [
+    'position:fixed',
+    'bottom:max(90px, calc(env(safe-area-inset-bottom, 0px) + 90px))',
+    'left:50%',
+    'transform:translateX(-50%)',
+    'background:' + cor,
+    'color:#fff',
+    'padding:14px 22px',
+    'border-radius:10px',
+    'font-size:14px',
+    'font-weight:500',
+    'z-index:9999',
+    'max-width:90vw',
+    'text-align:center',
+    'box-shadow:0 4px 16px rgba(0,0,0,0.35)',
+  ].join(';');
+  toast.textContent = mensagem;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.4s';
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 function showExportFeedback(sizeKB, photosCount) {
   const toast = document.createElement('div');
