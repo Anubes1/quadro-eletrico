@@ -15,6 +15,9 @@
 <link rel="manifest" href="../manifest.json">
 <title>Ficha de Campo — Quadro Elétrico</title>
 <link rel="stylesheet" href="../css/quadro-eletrico.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Critical mobile styles inline for faster load */
 html { -webkit-text-size-adjust: 100%; }
@@ -589,6 +592,47 @@ function renumberRows(tableId) {
 
 buildTable('table-a', 'A', 24);
 buildTable('table-b', 'B', 24);
+
+// ─── DYNAMIC ROW STATUS COLORING ───────────────────────────────
+// Applies a left-border color to rows based on the Estado select
+function applyRowColor(row) {
+  const selects = row.querySelectorAll('select');
+  const statusSelect = selects[4]; // Estado select (index 4)
+  if (!statusSelect) return;
+
+  row.classList.remove('row-ok', 'row-warn', 'row-critical', 'row-inactive', 'row-maint');
+
+  const v = statusSelect.value;
+  if (v.includes('OK'))      row.classList.add('row-ok');
+  else if (v.includes('Atenção')) row.classList.add('row-warn');
+  else if (v.includes('Inativo')) row.classList.add('row-inactive');
+  else if (v.includes('Manut'))   row.classList.add('row-maint');
+}
+
+function initRowColoring() {
+  document.querySelectorAll('#table-a tbody tr, #table-b tbody tr').forEach(row => {
+    applyRowColor(row);
+    const selects = row.querySelectorAll('select');
+    if (selects[4]) {
+      selects[4].addEventListener('change', () => applyRowColor(row));
+    }
+  });
+}
+
+// Hook into addRow to also apply coloring on new rows
+const _origAddRow = addRow;
+window.addRow = function(tableId) {
+  _origAddRow(tableId);
+  const table = document.getElementById(tableId);
+  const rows = table.querySelectorAll('tbody tr');
+  const lastRow = rows[rows.length - 1];
+  if (lastRow) {
+    const selects = lastRow.querySelectorAll('select');
+    if (selects[4]) selects[4].addEventListener('change', () => applyRowColor(lastRow));
+  }
+};
+
+initRowColoring();
 
 // Auto-set today's date
 const today = new Date().toISOString().split('T')[0];
